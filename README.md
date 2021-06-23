@@ -5,6 +5,7 @@ You need to have:
 * [Bitwarden CLI](https://bitwarden.com/)
 * [jq](https://stedolan.github.io/jq/)
 * [fzf](https://github.com/junegunn/fzf)
+* bash > 4.0
 
 ## Install
 
