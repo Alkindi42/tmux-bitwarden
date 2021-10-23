@@ -43,7 +43,7 @@ main() {
   items=$(get_bw_items "${TMUX_OPTS[@bw-session]}")
 
   # Choice element
-  key=$(echo "$items" | jq --raw-output '.|keys[]' | fzf --no-multi)
+  key=$(echo "$items" | jq --raw-output '.|keys[]' | fzf --no-multi) || return
 
   password=$(get_password "$items" "$key")
 
