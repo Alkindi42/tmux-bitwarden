@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
-cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
+#cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+declare -r CURRENT_DIR
 
-source "./utils.sh"
+# shellcheck source=/dev/null
+source "$CURRENT_DIR/utils.sh"
 
 is_authenticated() {
   [[ $(bw status | jq '.status') != "\"unauthenticated\"" ]] && true
@@ -30,7 +33,7 @@ get_password() {
 
 main() {
   declare -A TMUX_OPTS=(
-    ["@bw-session"]=$(get_tmux_option "@bw-session" $BW_SESSION)
+    ["@bw-session"]=$(get_tmux_option "@bw-session" "$BW_SESSION")
     ["@bw-copy-to-clipboard"]=$(get_tmux_option "@bw-copy-to-clipboard" "off")
   )
 
