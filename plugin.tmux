@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-declare -r CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+declare -r CURRENT_DIR
 
-# shellcheck source=utils.sh
+# shellcheck source=/dev/null
 source "$CURRENT_DIR/scripts/utils.sh"
 
 declare -a REQUIRED_BINARIES=(
