@@ -4,23 +4,8 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 declare -r CURRENT_DIR
 
 # shellcheck source=/dev/null
-source "$CURRENT_DIR/utils.sh"
-
-is_authenticated() {
-  [[ $(bw status | jq '.status') != "\"unauthenticated\"" ]] && true
-}
-
-# Get bitwarden items
-get_bw_items() {
-  local session="$1"
-  filter='map({ (.name|tostring): .login.password })|add'
-
-  if [[ -z "$session" ]]; then
-    bw list items | jq -r "$filter"
-  else
-    bw list items --session "$session" | jq -r "$filter"
-  fi
-}
+source "$CURRENT_DIR/lib/common.sh"
+source "$CURRENT_DIR/lib/vault.sh"
 
 get_password() {
   local items=$1

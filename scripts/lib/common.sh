@@ -19,7 +19,7 @@ cp_to_clipboard() {
 is_binary_exist() {
   local binary=$1
 
-  command -v "$binary" &> /dev/null
+  command -v "$binary" &>/dev/null
   return $?
 }
 
