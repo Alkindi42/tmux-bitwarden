@@ -1,31 +1,43 @@
 #!/usr/bin/env bash
 
-readonly TMUX_PREFIX="@bw"
+readonly BW_CONFIG_PREFIX="@bw"
 
-tmux_bw_set_option() {
+# Config keys
+readonly BW_CONFIG_KEY_UI="ui"
+readonly BW_CONFIG_KEY_SPLIT_SIZE="split-size"
+readonly BW_CONFIG_KEY_POPUP_WIDTH="popup-width"
+readonly BW_CONFIG_KEY_POPUP_HEIGHT="popup-height"
+
+# Default values
+readonly BW_CONFIG_DEFAULT_UI="popup"
+readonly BW_CONFIG_DEFAULT_SPLIT_SIZE="20"
+readonly BW_CONFIG_DEFAULT_POPUP_WIDTH="80%"
+readonly BW_CONFIG_DEFAULT_POPUP_HEIGHT="80%"
+
+tmux_bw_set_config() {
   local name="$1"
   local value="$2"
 
-  tmux set-option -gq "${TMUX_PREFIX}-${name}" "${value}"
+  tmux set-option -gq "${BW_CONFIG_PREFIX}-${name}" "${value}"
 }
 
 tmux_bw_get_config() {
   local name="$1"
 
-  tmux show-option -gqv "${TMUX_PREFIX}-$name"
+  tmux show-option -gqv "${BW_CONFIG_PREFIX}-$name"
 }
 
-# Get tmux option
+# Get config value or fallback to default
 tmux_bw_get_config_or_default() {
   local option="$1"
   local default_value="$2"
-  local option_value
+  local config_value
 
-  option_value="$(tmux_bw_get_config "$option")"
+  config_value="$(tmux_bw_get_config "$option")"
 
-  if [[ -z "$option_value" ]]; then
-    echo "$default_value"
+  if [[ -z "$config_value" ]]; then
+    printf '%s\n' "$default_value"
   else
-    echo "$option_value"
+    printf '%s\n' "$config_value"
   fi
 }

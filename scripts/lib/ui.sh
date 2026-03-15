@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly CURRENT_DIR
+readonly PLUGIN_SCRIPTS_DIR="$(cd "$CURRENT_DIR/.." && pwd)"
+
+source "$CURRENT_DIR/config.sh"
+source "$CURRENT_DIR/common.sh"
+
+tmux_bw_open_ui() {
+  local ui_mode
+  ui_mode="$(tmux_bw_get_config_or_default "$BW_CONFIG_KEY_UI" "$BW_CONFIG_DEFAULT_UI")"
+
+  case "$ui_mode" in
+  popup)
+    tmux_bw_open_popup || return 1
+    ;;
+  split)
+    tmux_bw_open_split || return 1
+    ;;
+  *)
+    tmux_display_message "Unknown UI mode: $ui_mode"
+    return 1
+    ;;
+  esac
+}
+#
+tmux_bw_open_split() {
+  local size
+
+  size="$(tmux_bw_get_config_or_default "$BW_CONFIG_KEY_SPLIT_SIZE" "$BW_CONFIG_DEFAULT_SPLIT_SIZE")"
+  tmux split-window -l "$size" "$PLUGIN_SCRIPTS_DIR/main.sh"
+}
+
+tmux_bw_open_popup() {
+  local width
+  local height
+
+  width="$(tmux_bw_get_config_or_default "$BW_CONFIG_KEY_POPUP_WIDTH" "$BW_CONFIG_DEFAULT_POPUP_WIDTH")"
+  height="$(tmux_bw_get_config_or_default "$BW_CONFIG_KEY_POPUP_HEIGHT" "$BW_CONFIG_DEFAULT_POPUP_HEIGHT")"
+
+  tmux display-popup \
+    -E \
+    -d '#{pane_current_path}' \
+    -w "$width" \
+    -h "$height" \
+    "$PLUGIN_SCRIPTS_DIR/main.sh"
+}
+
+tmux_bw_open_ui

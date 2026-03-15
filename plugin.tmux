@@ -24,7 +24,7 @@ main() {
   done
 
   key_binding="$(tmux_bw_get_config_or_default "key" "b")"
-  tmux bind-key "$key_binding" split-window -l 10 "$CURRENT_DIR/scripts/main.sh"
+  tmux bind-key "$key_binding" run-shell "$CURRENT_DIR/scripts/lib/ui.sh"
 }
 
 main "$@"
