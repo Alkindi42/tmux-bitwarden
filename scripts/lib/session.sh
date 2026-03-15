@@ -28,7 +28,7 @@ bw_unlock() {
 
 tmux_bw_get_session() {
   local tmux_session
-  tmux_session="$(tmux_get_option "session")"
+  tmux_session="$(tmux_bw_get_config "session")"
 
   if [[ -n "${BW_SESSION:-}" ]]; then
     printf '%s\n' "$BW_SESSION"
@@ -51,5 +51,5 @@ tmux_bw_unlock_and_store_session() {
     tmux_display_message "Failed to unlock vault. Please try again."
     return 1
   }
-  tmux_set_option "session" "$new_session"
+  tmux_bw_set_config "session" "$new_session"
 }

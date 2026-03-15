@@ -4,6 +4,7 @@ CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 declare -r CURRENT_DIR
 
 # shellcheck source=/dev/null
+source "$CURRENT_DIR/lib/config.sh"
 source "$CURRENT_DIR/lib/common.sh"
 source "$CURRENT_DIR/lib/session.sh"
 source "$CURRENT_DIR/lib/vault.sh"
@@ -18,8 +19,8 @@ get_password() {
 
 main() {
   declare -A TMUX_OPTS=(
-    ["@bw-session"]=$(tmux_get_option_or_default "session" "$BW_SESSION")
-    ["@bw-copy-to-clipboard"]=$(tmux_get_option_or_default "copy-to-clipboard" "off")
+    ["@bw-session"]=$(tmux_bw_get_config_or_default "session" "$BW_SESSION")
+    ["@bw-copy-to-clipboard"]=$(tmux_bw_get_config_or_default "copy-to-clipboard" "off")
   )
 
   case "$(tmux_bw_get_status)" in
