@@ -2,7 +2,9 @@
 
 # Get bitwarden items
 get_bw_items() {
-  local session="$1"
+  local session
+
+  session="$(tmux_bw_get_session)"
   filter='map({ (.name|tostring): .login.password })|add'
 
   if [[ -z "$session" ]]; then
@@ -10,8 +12,4 @@ get_bw_items() {
   else
     bw list items --session "$session" | jq -r "$filter"
   fi
-}
-
-is_authenticated() {
-  [[ $(bw status | jq '.status') != "\"unauthenticated\"" ]] && true
 }

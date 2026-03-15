@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 declare -r CURRENT_DIR
 
 # shellcheck source=/dev/null
 source "$CURRENT_DIR/lib/common.sh"
+source "$CURRENT_DIR/lib/session.sh"
 source "$CURRENT_DIR/lib/vault.sh"
 
 get_password() {
@@ -17,15 +18,25 @@ get_password() {
 
 main() {
   declare -A TMUX_OPTS=(
-    ["@bw-session"]=$(get_tmux_option "@bw-session" "$BW_SESSION")
-    ["@bw-copy-to-clipboard"]=$(get_tmux_option "@bw-copy-to-clipboard" "off")
+    ["@bw-session"]=$(tmux_get_option_or_default "session" "$BW_SESSION")
+    ["@bw-copy-to-clipboard"]=$(tmux_get_option_or_default "copy-to-clipboard" "off")
   )
 
-  is_authenticated
-  if [[ $? -eq 1 ]]; then
-    display_tmux_message "You are not logged in."
+  case "$(tmux_bw_get_status)" in
+  "$BW_STATUS_UNAUTHENTICATED")
+    tmux_display_message "You are not logged in. Please run 'bw login'."
     return 1
-  fi
+    ;;
+  "$BW_STATUS_LOCKED")
+    tmux_bw_unlock_and_store_session || return 1
+    ;;
+  "$BW_STATUS_UNLOCKED")
+    ;;
+  *)
+    tmux_display_message "Unknown Bitwarden status."
+    return 1
+    ;;
+  esac
 
   items=$(get_bw_items "${TMUX_OPTS[@bw-session]}")
 

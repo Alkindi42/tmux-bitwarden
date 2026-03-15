@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+readonly TMUX_PREFIX="@bw"
+
 # Copy text to the clipboard
 cp_to_clipboard() {
   if [[ "$(uname)" == "Darwin" ]] && is_binary_exist "pbcopy"; then
@@ -23,12 +25,26 @@ is_binary_exist() {
   return $?
 }
 
+tmux_set_option() {
+  local name="$1"
+  local value="$2"
+
+  tmux set-option -gq "${TMUX_PREFIX}-${name}" "${value}"
+}
+
+tmux_get_option() {
+  local name="$1"
+
+  tmux show-option -gqv "${TMUX_PREFIX}-$name"
+}
+
 # Get tmux option
-get_tmux_option() {
+tmux_get_option_or_default() {
   local option="$1"
   local default_value="$2"
   local option_value
-  option_value=$(tmux show-option -gqv "$option")
+
+  option_value="$(tmux_get_option "$option")"
 
   if [[ -z "$option_value" ]]; then
     echo "$default_value"
@@ -38,7 +54,7 @@ get_tmux_option() {
 }
 
 # Display tmux message in status bar
-display_tmux_message() {
-  local message=$1
+tmux_display_message() {
+  local message="$1"
   tmux display-message "tmux-bitwarden: $message"
 }
