@@ -28,3 +28,7 @@ tmux_display_message() {
   local message="$1"
   tmux display-message "tmux-bitwarden: $message"
 }
+
+tmux_get_current_pane() {
+  tmux display-message -p "#{pane_id}"
+}
