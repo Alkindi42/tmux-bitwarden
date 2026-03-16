@@ -19,7 +19,7 @@ readonly BW_CONFIG_KEY_CACHE_TTL="cache-ttl"
 readonly BW_CONFIG_KEY_CACHE_FILE="cache-file"
 
 readonly BW_CONFIG_DEFAULT_CACHE="true"
-readonly BW_CONFIG_DEFAULT_CACHE_TTL=3600
+readonly BW_CONFIG_DEFAULT_CACHE_TTL=86400
 readonly BW_CONFIG_DEFAULT_CACHE_FILE="${HOME}/.cache/tmux-bitwarden/items.json"
 
 tmux_bw_set_config() {

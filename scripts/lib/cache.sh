@@ -59,8 +59,15 @@ tmux_bw_list_items_with_cache() {
       cache="$(<"$cache_file")" || return 1
     fi
   else
-    cache="$(bw_list_items "$session" | jq "$cache_filter")" || return 1
+    cache="$(bw_list_items "$session" | jq -c "$cache_filter")" || return 1
   fi
 
   printf "%s\n" "$cache"
+}
+
+tmux_bw_cache_invalidate() {
+  local cache_file
+
+  cache_file="$(tmux_bw_get_config_or_default "$BW_CONFIG_KEY_CACHE_FILE" "$BW_CONFIG_DEFAULT_CACHE_FILE")" || return 1
+  rm -f "$cache_file"
 }
