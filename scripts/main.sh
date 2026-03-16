@@ -1,21 +1,25 @@
-#!/usr/bin/env bash
-
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly CURRENT_DIR
 
 # shellcheck source=/dev/null
 source "$CURRENT_DIR/lib/config.sh"
 source "$CURRENT_DIR/lib/common.sh"
-source "$CURRENT_DIR/lib/actions.sh"
-source "$CURRENT_DIR/lib/session.sh"
-source "$CURRENT_DIR/lib/selector.sh"
 source "$CURRENT_DIR/lib/vault.sh"
+source "$CURRENT_DIR/lib/cache.sh"
+source "$CURRENT_DIR/lib/session.sh"
+source "$CURRENT_DIR/lib/actions.sh"
+source "$CURRENT_DIR/lib/selector.sh"
 
 main() {
   local action
   local item_id
   local selection
   local target_pane_id="$1"
+
+  [[ -n "$target_pane_id" ]] || {
+    tmux_display_message "Invalid pane target."
+    return 1
+  }
 
   case "$(tmux_bw_get_status)" in
   "$BW_STATUS_UNAUTHENTICATED")

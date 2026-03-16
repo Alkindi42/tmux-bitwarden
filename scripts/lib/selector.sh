@@ -17,7 +17,7 @@ tmux_bw_selector() {
   selection="$(
     {
       printf 'id\tName\tUsername\tURI\n'
-      bw_list_items "$session" | jq -r '
+      tmux_bw_list_items_with_cache "$session" | jq -r '
       .[]
       | [
           .id,

@@ -2,17 +2,25 @@
 
 readonly BW_CONFIG_PREFIX="@bw"
 
-# Config keys
+# UI configuration
 readonly BW_CONFIG_KEY_UI="ui"
 readonly BW_CONFIG_KEY_SPLIT_SIZE="split-size"
 readonly BW_CONFIG_KEY_POPUP_WIDTH="popup-width"
 readonly BW_CONFIG_KEY_POPUP_HEIGHT="popup-height"
 
-# Default values
 readonly BW_CONFIG_DEFAULT_UI="popup"
 readonly BW_CONFIG_DEFAULT_SPLIT_SIZE="20"
 readonly BW_CONFIG_DEFAULT_POPUP_WIDTH="80%"
 readonly BW_CONFIG_DEFAULT_POPUP_HEIGHT="80%"
+
+# Cache configuration
+readonly BW_CONFIG_KEY_CACHE="cache"
+readonly BW_CONFIG_KEY_CACHE_TTL="cache-ttl"
+readonly BW_CONFIG_KEY_CACHE_FILE="cache-file"
+
+readonly BW_CONFIG_DEFAULT_CACHE="true"
+readonly BW_CONFIG_DEFAULT_CACHE_TTL=3600
+readonly BW_CONFIG_DEFAULT_CACHE_FILE="${HOME}/.cache/tmux-bitwarden/items.json"
 
 tmux_bw_set_config() {
   local name="$1"

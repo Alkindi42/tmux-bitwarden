@@ -2,7 +2,8 @@
 
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly CURRENT_DIR
-readonly PLUGIN_SCRIPTS_DIR="$(cd "$CURRENT_DIR/.." && pwd)"
+PLUGIN_SCRIPTS_DIR="$(cd "$CURRENT_DIR/.." && pwd)"
+readonly PLUGIN_SCRIPTS_DIR
 
 source "$CURRENT_DIR/config.sh"
 source "$CURRENT_DIR/common.sh"
