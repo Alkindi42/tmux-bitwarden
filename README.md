@@ -1,57 +1,149 @@
 # tmux-bitwarden
 
+![License](https://img.shields.io/github/license/Alkindi42/tmux-bitwarden)
+
+Search and access your Bitwarden vault directly inside tmux using fuzzy search.
+
+Quickly search login items and paste credentials without leaving your terminal.
+
+## Features
+
+- 🔍 Fuzzy search Bitwarden items with `fzf`
+- 👀 Preview username and URIs before selecting
+- 🔐 Secure vault access through the Bitwarden CLI
+- ⚡ Fast search with optional caching
+- ⌨️ Keyboard-driven workflow
+- 📋 Paste or copy credentials instantly
+- 🔄 Refresh cache without leaving the selector
+- 🖥 Popup or split pane interface
+
 ## Requirements
-You need to have:
-* [Bitwarden CLI](https://bitwarden.com/)
-* [jq](https://stedolan.github.io/jq/)
-* [fzf](https://github.com/junegunn/fzf)
-* bash > 4.0
 
-## Install
+You need the following tools installed:
 
-### Tmux Plugin Manager (recommended)
-1. In your `.tmux.conf` add the plugin to the list.
-```
+- [Bitwarden CLI](https://bitwarden.com/help/cli/)
+- [jq](https://stedolan.github.io/jq/)
+- [fzf](https://github.com/junegunn/fzf)
+- Bash >= 4
+- tmux >= 3.0
+
+## Installation
+
+### Using Tmux Plugin Manager (recommended)
+
+Add the plugin to your .tmux.conf:
+
+```bash
 set -g @plugin 'Alkindi42/tmux-bitwarden'
 ```
-2. Type `prefix + I` to install the plugin.
 
-## Key bindings
-* `prefix + b`: list login items in a bottom pane.
+Then, install it:
 
-## Usage
-First, log into your Bitwarden user account using the `login` command (you only need to do this once):
 ```bash
-$ bw login your-email@domain.com
-? Master password: [input is hidden]
-To unlock your vault, set your session key to the `BW_SESSION` environment variable. ex:
-$ export BW_SESSION="lpvf7Rt+pAMXW2YJ5O42jJp6ZY0Ny01vq9jaUdFYbroS1CXWgjVdy7j42owHVoLwZf+yDI+ro68Qngo9mdD/vA=="
-> $env:BW_SESSION="lpvf7Rt+pAMXW2YJ5O42jJp6ZY0Ny01vq9jaUdFYbroS1CXWgjVdy7j42owHVoLwZf+yDI+ro68Qngo9mdD/vA=="
+prefix + I
 ```
 
-In a tmux session, you can run the plugin with the default key binding `prefix + b`. This opens a new pane at the bottom with login items. You can choose your login item with `<Enter>`, your password will be automatically filled.
+## Usage
 
-If you have not configured your bitwarden session (`BW_SESSION`), you will be prompted to re-enter your master password before each selection (see configuration section for more information)
+Press: `prefix + b` to open the Bitwarden selector.
+
+You can then:
+
+- search your vault items
+- preview item details
+- paste or copy credentials
+
+## Key Bindings
+
+Available inside the **selector**:
+
+| Key | Action |
+|-----|-----------------------------------------|
+| `Enter` | Paste password into the active pane |
+| `Ctrl-y` | Copy password to clipboard |
+| `Ctrl-u` | Paste username into the active pane |
+| `Alt-u` | Copy username to clipboard |
+| `Ctrl-r` | Refresh cached items |
+
+## Authentication
+
+Before using the plugin, you only need to log in to Bitwarden using the CLI:
+
+```bash
+bw login
+```
+
+_No manual `BW_SESSION` export is required._
 
 ## Configuration
 
-### Changing the default key-binding
-```
-set -g @bw-key 'T'
-```
-Default: `u`
+All options are optional.
 
-### Define Bitwarden session
-To avoid re-entering your master password before each selection, you can define your [session Bitwarden](https://bitwarden.com/help/article/cli/#session-management).
-Your `BW_SESSION` comes from the result of the `login` command.
-```
-set -g @bw-session 'BW_SESSION'
-```
-If the `BW_SESSION` variable exists in your environment variable then it will be used.
+### Default configuration
 
-### Copy the password to the clipboard
-By default, after selection, the password is sent in the last pane. If you want to have it in your clipboard you have to activate the option:
+The plugin works out of the box with the following defaults:
+
+| Option | Default |
+|------|------|
+| `@bw-key` | `b` |
+| `@bw-ui` | `popup` |
+| `@bw-ui-split-size` | `20` |
+| `@bw-ui-popup-width` | `80%` |
+| `@bw-ui-popup-height` | `80%` |
+| `@bw-cache` | `true` |
+| `@bw-cache-ttl` | `86400` |
+| `@bw-cache-file` | `~/.cache/tmux-bitwarden/items.json` |
+
+---
+
+### Example configuration
+
+```tmux
+set -g @bw-key 'b'
+set -g @bw-ui 'popup'
+set -g @bw-cache 'true'
+set -g @bw-cache-ttl '86400'
 ```
-set -g @bw-copy-to-clipboard 'on'
+
+### UI options
+
+| Option | Description |
+|------|------|
+| `@bw-ui` | `popup` or `split` |
+| `@bw-ui-split-size` | Height of the split pane |
+| `@bw-ui-popup-width` | Popup width (%) |
+| `@bw-ui-popup-height` | Popup height (%) |
+
+Example:
+
+```tmux
+set -g @bw-ui 'split'
+set -g @bw-ui-split-size '20'
+set -g @bw-ui-popup-height '90'
 ```
-Default: `off`
+
+### Cache options
+
+| Option | Description |
+|------|------|
+| `@bw-cache` | Enable or disable caching |
+| `@bw-cache-ttl` | Cache duration in seconds |
+| `@bw-cache-file` | Cache file location |
+
+```tmux
+set -g @bw-cache 'true'
+set -g @bw-cache-ttl '86400'
+```
+
+You can refresh the cache anytime inside the selector with `Ctrl-r`.
+
+## Security
+
+- Passwords are **never stored in the cache**
+- Only metadata (name, username, URIs) is cached
+- Passwords are retrieved **only when required**
+- Vault access is handled by the Bitwarden CLI session
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

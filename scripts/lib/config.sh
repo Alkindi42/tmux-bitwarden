@@ -4,9 +4,9 @@ readonly BW_CONFIG_PREFIX="@bw"
 
 # UI configuration
 readonly BW_CONFIG_KEY_UI="ui"
-readonly BW_CONFIG_KEY_SPLIT_SIZE="split-size"
-readonly BW_CONFIG_KEY_POPUP_WIDTH="popup-width"
-readonly BW_CONFIG_KEY_POPUP_HEIGHT="popup-height"
+readonly BW_CONFIG_KEY_SPLIT_SIZE="ui-split-size"
+readonly BW_CONFIG_KEY_POPUP_WIDTH="ui-popup-width"
+readonly BW_CONFIG_KEY_POPUP_HEIGHT="ui-popup-height"
 
 readonly BW_CONFIG_DEFAULT_UI="popup"
 readonly BW_CONFIG_DEFAULT_SPLIT_SIZE="20"
