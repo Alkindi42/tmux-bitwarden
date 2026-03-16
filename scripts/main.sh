@@ -12,7 +12,9 @@ source "$CURRENT_DIR/lib/selector.sh"
 source "$CURRENT_DIR/lib/vault.sh"
 
 main() {
+  local action
   local item_id
+  local selection
   local target_pane_id="$1"
 
   case "$(tmux_bw_get_status)" in
@@ -30,12 +32,30 @@ main() {
     ;;
   esac
 
-  item_id="$(tmux_bw_selector)" || return 0
+  selection="$(tmux_bw_selector)" || return 0
+  action="$(printf '%s\n' "$selection" | sed -n '1p')"
+  item_id="$(printf '%s\n' "$selection" | sed -n '2p')"
 
-  tmux_bw_action "$item_id" "$target_pane_id" || {
-    tmux_display_message "Failed to inject secret."
+  case "$action" in
+  "$BW_PASTE_PASSWORD")
+    tmux_bw_paste_password "$item_id" "$target_pane_id" || {
+      tmux_display_message "Failed to paste password."
+      return 1
+    }
+    ;;
+  "$BW_COPY_PASSWORD")
+    tmux_bw_copy_password "$item_id" || {
+      tmux_display_message "Failed to copy password to the clipboard."
+      return 1
+    }
+    tmux_display_message "Password copied to the clipboard."
+    ;;
+  *)
+    tmux_display_message "Unknown action."
     return 1
-  }
+    ;;
+  esac
+
 }
 
 main "$@"
