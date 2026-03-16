@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+readonly BW_KEY_PASTE_PASSWORD="enter"
+readonly BW_KEY_COPY_PASSWORD="ctrl-y"
+readonly BW_KEY_PASTE_USERNAME="ctrl-u"
+readonly BW_KEY_COPY_USERNAME="alt-u"
+
 tmux_bw_selector() {
   local key
   local session
@@ -24,10 +29,11 @@ tmux_bw_selector() {
     '
     } | column -t -s $'\t' | fzf \
       --delimiter='  +' \
-      --expect=enter,ctrl-y \
+      --expect="$BW_KEY_PASTE_PASSWORD,$BW_KEY_COPY_PASSWORD,$BW_KEY_PASTE_USERNAME,$BW_KEY_COPY_USERNAME" \
       --with-nth=2,3,4 \
       --nth=2,3,4 \
       --header-lines=1 \
+      --header="${BW_KEY_PASTE_PASSWORD}: paste password | ${BW_KEY_COPY_PASSWORD}: copy password | ${BW_KEY_PASTE_USERNAME}: paste username | ${BW_KEY_COPY_USERNAME}: copy username" \
       --prompt='Bitwarden > '
   )"
 
@@ -36,11 +42,17 @@ tmux_bw_selector() {
   item_id="$(printf '%s\n' "$selected_line" | awk '{print $1}')"
 
   case "$key" in
-  "" | enter)
+  "" | "$BW_KEY_PASTE_PASSWORD")
     action_name="$BW_PASTE_PASSWORD"
     ;;
-  ctrl-y)
+  "$BW_KEY_COPY_PASSWORD")
     action_name="$BW_COPY_PASSWORD"
+    ;;
+  "$BW_KEY_PASTE_USERNAME")
+    action_name="$BW_PASTE_USERNAME"
+    ;;
+  "$BW_KEY_COPY_USERNAME")
+    action_name="$BW_COPY_USERNAME"
     ;;
   *)
     return 1

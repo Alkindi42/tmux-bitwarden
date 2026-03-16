@@ -2,6 +2,8 @@
 
 readonly BW_COPY_PASSWORD="copy-password"
 readonly BW_PASTE_PASSWORD="paste-password"
+readonly BW_PASTE_USERNAME="paste-username"
+readonly BW_COPY_USERNAME="copy-username"
 
 # Copy text to the clipboard
 tmux_bw_copy_to_clipboard() {
@@ -48,4 +50,31 @@ tmux_bw_copy_password() {
   [[ -n "$password" ]] || return 1
 
   tmux_bw_copy_to_clipboard "$password"
+}
+
+tmux_bw_paste_username() {
+  local id="$1"
+  local target_pane_id="$2"
+  local session
+  local username
+
+  session="$(tmux_bw_get_session)"
+  username="$(bw_get_item_by_id "$session" "$id" | jq -r '.login.username // empty')" || return 1
+
+  [[ -n "$username" ]] || return 1
+
+  tmux send-keys -l -t "$target_pane_id" -- "$username"
+}
+
+tmux_bw_copy_username() {
+  local id="$1"
+  local session
+  local username
+
+  session="$(tmux_bw_get_session)"
+  username="$(bw_get_item_by_id "$session" "$id" | jq -r '.login.username // empty')" || return 1
+
+  [[ -n "$username" ]] || return 1
+
+  tmux_bw_copy_to_clipboard "$username"
 }

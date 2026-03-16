@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-declare -r CURRENT_DIR
+readonly CURRENT_DIR
 
 # shellcheck source=/dev/null
 source "$CURRENT_DIR/lib/config.sh"
@@ -49,6 +49,19 @@ main() {
       return 1
     }
     tmux_display_message "Password copied to the clipboard."
+    ;;
+  "$BW_PASTE_USERNAME")
+    tmux_bw_paste_username "$item_id" "$target_pane_id" || {
+      tmux_display_message "Failed to paste username."
+      return 1
+    }
+    ;;
+  "$BW_COPY_USERNAME")
+    tmux_bw_copy_username "$item_id" || {
+      tmux_display_message "Failed to copy username to the clipboard."
+      return 1
+    }
+    tmux_display_message "Username copied to the clipboard."
     ;;
   *)
     tmux_display_message "Unknown action."
