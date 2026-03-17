@@ -24,7 +24,7 @@ tmux_bw_open_ui() {
     ;;
   *)
     tmux_display_message "Unknown UI mode: $ui_mode"
-    return 1
+    return 0
     ;;
   esac
 }

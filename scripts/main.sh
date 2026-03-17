@@ -18,13 +18,13 @@ main() {
 
   [[ -n "$target_pane_id" ]] || {
     tmux_display_message "Invalid pane target."
-    return 1
+    return 0
   }
 
   case "$(tmux_bw_get_status)" in
   "$BW_STATUS_UNAUTHENTICATED")
     tmux_display_message "You are not logged in. Please run 'bw login'."
-    return 1
+    return 0
     ;;
   "$BW_STATUS_LOCKED")
     tmux_bw_unlock_and_store_session || return 1
