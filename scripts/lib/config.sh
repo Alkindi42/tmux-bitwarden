@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2034
 
 readonly BW_CONFIG_PREFIX="@bw"
 

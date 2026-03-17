@@ -1,13 +1,21 @@
+#!/usr/bin/env bash
+
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly CURRENT_DIR
 
-# shellcheck source=/dev/null
+# shellcheck source=scripts/lib/config.sh
 source "$CURRENT_DIR/lib/config.sh"
+# shellcheck source=scripts/lib/common.sh
 source "$CURRENT_DIR/lib/common.sh"
+# shellcheck source=scripts/lib/vault.sh
 source "$CURRENT_DIR/lib/vault.sh"
+# shellcheck source=scripts/lib/cache.sh
 source "$CURRENT_DIR/lib/cache.sh"
+# shellcheck source=scripts/lib/session.sh
 source "$CURRENT_DIR/lib/session.sh"
+# shellcheck source=scripts/lib/actions.sh
 source "$CURRENT_DIR/lib/actions.sh"
+# shellcheck source=scripts/lib/selector.sh
 source "$CURRENT_DIR/lib/selector.sh"
 
 main() {

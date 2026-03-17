@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2034
 
 readonly BW_COPY_PASSWORD="copy-password"
 readonly BW_PASTE_PASSWORD="paste-password"

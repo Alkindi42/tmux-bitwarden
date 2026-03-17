@@ -5,7 +5,9 @@ readonly CURRENT_DIR
 PLUGIN_SCRIPTS_DIR="$(cd "$CURRENT_DIR/.." && pwd)"
 readonly PLUGIN_SCRIPTS_DIR
 
+# shellcheck source=scripts/lib/config.sh
 source "$CURRENT_DIR/config.sh"
+# shellcheck source=scripts/lib/common.sh
 source "$CURRENT_DIR/common.sh"
 
 tmux_bw_open_ui() {

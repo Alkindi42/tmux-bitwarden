@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2034
 
 readonly BW_STATUS_LOCKED="locked"
 readonly BW_STATUS_UNLOCKED="unlocked"
