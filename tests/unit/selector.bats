@@ -37,6 +37,16 @@ setup() {
 
 @test "selector returns CANCEL on fzf interrupt (130)" {
   # shellcheck disable=SC2329
+  tmux_bw_get_session() {
+    printf '%s\n' "session-token"
+  }
+
+  # shellcheck disable=SC2329
+  tmux_bw_selector_rows() {
+    printf 'id\tName\tUsername\tURIs\n'
+  }
+
+  # shellcheck disable=SC2329
   fzf() {
     return 130
   }
@@ -48,6 +58,16 @@ setup() {
 
 @test "selector returns CANCEL on no match (1)" {
   # shellcheck disable=SC2329
+  tmux_bw_get_session() {
+    printf '%s\n' "session-token"
+  }
+
+  # shellcheck disable=SC2329
+  tmux_bw_selector_rows() {
+    printf 'id\tName\tUsername\tURIs\n'
+  }
+
+  # shellcheck disable=SC2329
   fzf() {
     return 1
   }
@@ -58,6 +78,17 @@ setup() {
 }
 
 @test "selector returns ERROR on fzf error (2)" {
+  # shellcheck disable=SC2329
+  tmux_bw_get_session() {
+    printf '%s\n' "session-token"
+  }
+
+  # shellcheck disable=SC2329
+  tmux_bw_selector_rows() {
+    printf 'id\tName\tUsername\tURIs\n'
+  }
+
+  # shellcheck disable=SC2329
   fzf() {
     return 2
   }
@@ -65,4 +96,26 @@ setup() {
   run tmux_bw_selector
 
   [ "$status" -eq "$TMUX_BW_SELECTOR_ERROR" ]
+}
+
+@test "selector returns action and item id from fzf output" {
+  # shellcheck disable=SC2329
+  tmux_bw_get_session() {
+    printf '%s\n' "session-token"
+  }
+
+  # shellcheck disable=SC2329
+  tmux_bw_selector_rows() {
+    printf 'id\tName\tUsername\tURIs\n'
+  }
+
+  # shellcheck disable=SC2329
+  fzf() {
+    printf '\nitem-123\tGitHub\talice\t["https://github.com"]\n'
+  }
+
+  run tmux_bw_selector
+
+  [ "$status" -eq 0 ]
+  [ "$output" = "$(printf '%s\n%s' "$BW_PASTE_PASSWORD" "item-123")" ]
 }

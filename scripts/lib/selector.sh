@@ -60,10 +60,12 @@ tmux_bw_selector() {
   local _username
   local _uris_json
 
-  session="$(tmux_bw_get_session)"
+  if ! session="$(tmux_bw_get_session)"; then
+    return "$TMUX_BW_SELECTOR_ERROR"
+  fi
 
   while true; do
-    selection="$(
+    if selection="$(
       tmux_bw_selector_rows "$session" | fzf \
         --delimiter=$'\t' \
         --expect="$BW_KEY_PASTE_PASSWORD,$BW_KEY_COPY_PASSWORD,$BW_KEY_PASTE_USERNAME,$BW_KEY_COPY_USERNAME,$BW_KEY_REFRESH_CACHE" \
@@ -79,32 +81,35 @@ tmux_bw_selector() {
           printf "%s\n" {4} | jq -r '"'"'if length == 0 then "(none)" else .[] end'"'"'
         ' \
         --preview-window='right:50%:wrap'
-    )"
-
-    status=$?
+    )"; then
+      status=0
+    else
+      status=$?
+    fi
 
     case "$status" in
     0) ;;
     130 | 1)
       return "$TMUX_BW_SELECTOR_CANCEL"
       ;;
-    2)
-      return "$TMUX_BW_SELECTOR_ERROR"
-      ;;
     *)
       return "$TMUX_BW_SELECTOR_ERROR"
       ;;
     esac
 
-    key="$(printf '%s\n' "$selection" | sed -n '1p')"
-    selected_line="$(printf '%s\n' "$selection" | sed -n '2p')"
+    {
+      IFS= read -r key
+      IFS= read -r selected_line
+    } <<<"$selection"
 
     if [[ "$key" == "$BW_KEY_REFRESH_CACHE" ]]; then
       tmux_bw_cache_invalidate || return "$TMUX_BW_SELECTOR_ERROR"
       continue
     fi
 
-    action_name="$(tmux_bw_selector_action_from_key "$key")" || return "$TMUX_BW_SELECTOR_ERROR"
+    if ! action_name="$(tmux_bw_selector_action_from_key "$key")"; then
+      return "$TMUX_BW_SELECTOR_ERROR"
+    fi
 
     IFS=$'\t' read -r item_id _name _username _uris_json <<<"$selected_line"
     [[ -n "$item_id" ]] || return "$TMUX_BW_SELECTOR_ERROR"
