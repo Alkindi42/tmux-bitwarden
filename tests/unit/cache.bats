@@ -48,3 +48,12 @@ teardown() {
 
   tmux_bw_cache_invalidate
 }
+
+@test "cache never expires when ttl is -1" {
+  local cache_file="$TEST_TMPDIR/items.json"
+  printf '%s\n' '[]' >"$cache_file"
+
+  run tmux_bw_cache_is_expired "$cache_file" -1
+
+  [ "$status" -eq 1 ]
+}

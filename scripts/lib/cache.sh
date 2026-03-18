@@ -20,6 +20,10 @@ tmux_bw_cache_is_expired() {
 
   [[ -f "$file" ]] || return 0
 
+  if [[ "$ttl_seconds" -eq -1 ]]; then
+    return 1
+  fi
+
   now="$(date +%s)"
   mtime="$(tmux_bw_file_mtime "$file")" || return 0
 

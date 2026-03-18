@@ -128,7 +128,7 @@ set -g @bw-ui-popup-height '90'
 | Option | Description |
 |------|------|
 | `@bw-cache` | Enable or disable caching |
-| `@bw-cache-ttl` | Cache duration in seconds |
+| `@bw-cache-ttl` | Cache duration in seconds (-1 to never expire) |
 | `@bw-cache-file` | Cache file location |
 
 ```tmux
@@ -136,6 +136,7 @@ set -g @bw-cache 'true'
 set -g @bw-cache-ttl '86400'
 ```
 
+With `-1`, cached items never expire automatically.  
 You can refresh the cache anytime inside the selector with `Ctrl-r`.
 
 ## Security
