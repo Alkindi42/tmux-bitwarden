@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034
 
+readonly BW_COPY_TOTP="copy-totp"
+readonly BW_PASTE_TOTP="paste-totp"
 readonly BW_COPY_PASSWORD="copy-password"
 readonly BW_PASTE_PASSWORD="paste-password"
 readonly BW_PASTE_USERNAME="paste-username"
@@ -26,56 +28,91 @@ tmux_bw_copy_to_clipboard() {
   fi
 }
 
+tmux_bw_get_totp() {
+  local id="$1"
+  local session
+  local value
+
+  session="$(tmux_bw_get_session)" || return 1
+  [[ -n "$session" ]] || return 1
+
+  value="$(bw_get_totp "$session" "$id")" || return 1
+  [[ -n "$value" ]] || return 1
+
+  printf '%s\n' "$value"
+}
+
+tmux_bw_get_value() {
+  local id="$1"
+  local field="$2"
+  local value
+  local session
+
+  session="$(tmux_bw_get_session)" || return 1
+  [[ -n "$session" ]] || return 1
+
+  value="$(bw_get_item_by_id "$session" "$id" | jq --arg field "$field" -r '.login[$field] // empty')" || return 1
+  [[ -n "$value" ]] || return 1
+
+  printf '%s\n' "$value"
+}
+
+tmux_bw_paste() {
+  local id="$1"
+  local target_pane_id="$2"
+  local field="$3"
+
+  local value
+
+  value="$(tmux_bw_get_value "$id" "$field")" || return 1
+  tmux send-keys -l -t "$target_pane_id" -- "$value"
+}
+
+tmux_bw_copy() {
+  local id="$1"
+  local field="$2"
+
+  local value
+
+  value="$(tmux_bw_get_value "$id" "$field")" || return 1
+  tmux_bw_copy_to_clipboard "$value"
+}
+
 tmux_bw_paste_password() {
   local id="$1"
   local target_pane_id="$2"
-  local session
-  local password
-
-  session="$(tmux_bw_get_session)"
-  password="$(bw_get_item_by_id "$session" "$id" | jq -r '.login.password // empty')" || return 1
-
-  [[ -n "$password" ]] || return 1
-
-  tmux send-keys -l -t "$target_pane_id" -- "$password"
-}
-
-tmux_bw_copy_password() {
-  local id="$1"
-  local session
-  local password
-
-  session="$(tmux_bw_get_session)"
-  password="$(bw_get_item_by_id "$session" "$id" | jq -r '.login.password // empty')" || return 1
-
-  [[ -n "$password" ]] || return 1
-
-  tmux_bw_copy_to_clipboard "$password"
+  tmux_bw_paste "$id" "$target_pane_id" "password"
 }
 
 tmux_bw_paste_username() {
   local id="$1"
   local target_pane_id="$2"
-  local session
-  local username
+  tmux_bw_paste "$id" "$target_pane_id" "username"
+}
 
-  session="$(tmux_bw_get_session)"
-  username="$(bw_get_item_by_id "$session" "$id" | jq -r '.login.username // empty')" || return 1
-
-  [[ -n "$username" ]] || return 1
-
-  tmux send-keys -l -t "$target_pane_id" -- "$username"
+tmux_bw_copy_password() {
+  local id="$1"
+  tmux_bw_copy "$id" "password"
 }
 
 tmux_bw_copy_username() {
   local id="$1"
-  local session
-  local username
+  tmux_bw_copy "$id" "username"
+}
 
-  session="$(tmux_bw_get_session)"
-  username="$(bw_get_item_by_id "$session" "$id" | jq -r '.login.username // empty')" || return 1
+tmux_bw_copy_totp() {
+  local id="$1"
+  local value
 
-  [[ -n "$username" ]] || return 1
+  value="$(tmux_bw_get_totp "$id")" || return 1
+  tmux_bw_copy_to_clipboard "$value"
+}
 
-  tmux_bw_copy_to_clipboard "$username"
+tmux_bw_paste_totp() {
+  local id="$1"
+  local target_pane_id="$2"
+  local value
+
+  value="$(tmux_bw_get_totp "$id")" || return 1
+  tmux send-keys -l -t "$target_pane_id" -- "$value"
 }

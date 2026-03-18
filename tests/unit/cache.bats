@@ -57,3 +57,47 @@ teardown() {
 
   [ "$status" -eq 1 ]
 }
+
+@test "list items with cache filters non-login Bitwarden items" {
+  tmux_bw_get_config_or_default() {
+    case "$1" in
+    "$BW_CONFIG_KEY_CACHE")
+      printf '%s\n' "false"
+      ;;
+    *)
+      printf '%s\n' "$2"
+      ;;
+    esac
+  }
+
+  bw_list_items() {
+    cat <<'JSON'
+[
+  {
+    "id": "login-1",
+    "type": 1,
+    "name": "Github",
+    "login": {
+      "username": "Alkindi",
+      "uris": [
+        { "uri": "https://github.com/login" }
+      ]
+    }
+  },
+  {
+    "id": "card-1",
+    "type": 3,
+    "name": "Amex",
+    "card": {
+      "brand": "Amex"
+    }
+  }
+]
+JSON
+  }
+
+  run tmux_bw_list_items_with_cache "session-token"
+
+  [[ "$output" == *'"id":"login-1"'* ]]
+  [[ "$output" != *'"id":"card-1"'* ]]
+}

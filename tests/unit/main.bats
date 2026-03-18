@@ -6,6 +6,8 @@ setup() {
   load_main_script
 
   LAST_MESSAGE=""
+  PASTE_TOTP_ARGS=""
+  COPY_TOTP_ARGS=""
   PASTE_PASSWORD_ARGS=""
   COPY_PASSWORD_ARGS=""
   PASTE_USERNAME_ARGS=""
@@ -126,7 +128,6 @@ setup() {
   local status=0
   main "%1" || status=$?
 
-  [ "$status" -eq 1 ]
   [ "$LAST_MESSAGE" = "Unknown action." ]
 }
 
@@ -187,4 +188,47 @@ setup() {
 
   [ "$status" -eq 1 ]
   [ "$LAST_MESSAGE" = "Selector failed." ]
+}
+
+@test "main dispatches paste totp with selected item id and target pane" {
+  # shellcheck disable=SC2329
+  tmux_bw_get_status() {
+    printf '%s\n' "$BW_STATUS_UNLOCKED"
+  }
+
+  # shellcheck disable=SC2329
+  tmux_bw_selector() {
+    printf '%s\n%s\n' "$BW_PASTE_TOTP" "item-totp-1"
+  }
+
+  # shellcheck disable=SC2329
+  tmux_bw_paste_totp() {
+    PASTE_TOTP_ARGS="$1|$2"
+  }
+
+  main "%5"
+
+  [ "$PASTE_TOTP_ARGS" = "item-totp-1|%5" ]
+}
+
+@test "main shows success message after copy totp" {
+  # shellcheck disable=SC2329
+  tmux_bw_get_status() {
+    printf '%s\n' "$BW_STATUS_UNLOCKED"
+  }
+
+  # shellcheck disable=SC2329
+  tmux_bw_selector() {
+    printf '%s\n%s\n' "$BW_COPY_TOTP" "item-totp-2"
+  }
+
+  # shellcheck disable=SC2329
+  tmux_bw_copy_totp() {
+    COPY_TOTP_ARGS="$1"
+  }
+
+  main "%1"
+
+  [ "$COPY_TOTP_ARGS" = "item-totp-2" ]
+  [ "$LAST_MESSAGE" = "TOTP copied to the clipboard." ]
 }

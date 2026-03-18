@@ -46,7 +46,8 @@ tmux_bw_list_items_with_cache() {
           name,
           login: {
             username: .login.username,
-            uris: .login.uris
+            uris: .login.uris,
+            has_totp: (.login.totp != null and .login.totp != "")
           }
         }
     )

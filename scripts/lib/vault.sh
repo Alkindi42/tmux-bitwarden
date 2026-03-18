@@ -12,3 +12,10 @@ bw_get_item_by_id() {
 
   bw get item --session "$session" "$id"
 }
+
+bw_get_totp() {
+  local id="$2"
+  local session="$1"
+
+  bw get totp --session "$session" "$id"
+}

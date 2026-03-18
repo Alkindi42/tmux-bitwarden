@@ -62,8 +62,10 @@ main() {
     ;;
   esac
 
-  action="$(printf '%s\n' "$selection" | sed -n '1p')"
-  item_id="$(printf '%s\n' "$selection" | sed -n '2p')"
+  {
+    IFS= read -r action
+    IFS= read -r item_id
+  } <<<"$selection"
 
   [[ -n "$action" && -n "$item_id" ]] || {
     tmux_display_message "Selector returned invalid data."
@@ -74,35 +76,47 @@ main() {
   "$BW_PASTE_PASSWORD")
     tmux_bw_paste_password "$item_id" "$target_pane_id" || {
       tmux_display_message "Failed to paste password."
-      return 1
+      return 0
     }
     ;;
   "$BW_COPY_PASSWORD")
     tmux_bw_copy_password "$item_id" || {
       tmux_display_message "Failed to copy password to the clipboard."
-      return 1
+      return 0
     }
     tmux_display_message "Password copied to the clipboard."
     ;;
   "$BW_PASTE_USERNAME")
     tmux_bw_paste_username "$item_id" "$target_pane_id" || {
       tmux_display_message "Failed to paste username."
-      return 1
+      return 0
     }
     ;;
   "$BW_COPY_USERNAME")
     tmux_bw_copy_username "$item_id" || {
       tmux_display_message "Failed to copy username to the clipboard."
-      return 1
+      return 0
     }
     tmux_display_message "Username copied to the clipboard."
     ;;
+  "$BW_PASTE_TOTP")
+    tmux_bw_paste_totp "$item_id" "$target_pane_id" || {
+      tmux_display_message "Failed to paste TOTP."
+      return 0
+    }
+    ;;
+  "$BW_COPY_TOTP")
+    tmux_bw_copy_totp "$item_id" || {
+      tmux_display_message "Failed to copy TOTP to the clipboard."
+      return 0
+    }
+    tmux_display_message "TOTP copied to the clipboard."
+    ;;
   *)
     tmux_display_message "Unknown action."
-    return 1
+    return 0
     ;;
   esac
-
 }
 
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then

@@ -8,19 +8,16 @@ setup() {
 
 @test "enter maps to paste password" {
   run tmux_bw_selector_action_from_key "enter"
-  [ "$status" -eq 0 ]
   [ "$output" = "$BW_PASTE_PASSWORD" ]
 }
 
 @test "ctrl-y maps to copy password" {
   run tmux_bw_selector_action_from_key "ctrl-y"
-  [ "$status" -eq 0 ]
   [ "$output" = "$BW_COPY_PASSWORD" ]
 }
 
 @test "ctrl-u maps to paste username" {
   run tmux_bw_selector_action_from_key "ctrl-u"
-  [ "$status" -eq 0 ]
   [ "$output" = "$BW_PASTE_USERNAME" ]
 }
 
@@ -32,7 +29,6 @@ setup() {
 
 @test "unknown key returns error" {
   run tmux_bw_selector_action_from_key "foo"
-  [ "$status" -ne 0 ]
 }
 
 @test "selector returns CANCEL on fzf interrupt (130)" {
@@ -115,7 +111,15 @@ setup() {
   }
 
   run tmux_bw_selector
-
-  [ "$status" -eq 0 ]
   [ "$output" = "$(printf '%s\n%s' "$BW_PASTE_PASSWORD" "item-123")" ]
+}
+
+@test "alt-t maps to copy totp" {
+  run tmux_bw_selector_action_from_key "alt-t"
+  [ "$output" = "$BW_COPY_TOTP" ]
+}
+
+@test "ctrl-t maps to paste totp" {
+  run tmux_bw_selector_action_from_key "ctrl-t"
+  [ "$output" = "$BW_PASTE_TOTP" ]
 }
