@@ -1,6 +1,7 @@
 # tmux-bitwarden
 
 ![License](https://img.shields.io/github/license/Alkindi42/tmux-bitwarden)
+[![CI](https://github.com/Alkindi42/tmux-bitwarden/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/Alkindi42/tmux-bitwarden/actions/workflows/ci.yaml)
 
 Search and access your Bitwarden vault directly inside tmux using fuzzy search.
 
