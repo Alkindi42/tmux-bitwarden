@@ -14,18 +14,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  shellcheck:
+  ci:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - name: Install ShellCheck
+      - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y shellcheck
+          sudo apt-get install -y shellcheck git
+
+      - name: Install Bats
+        run: |
+          git clone --depth 1 https://github.com/bats-core/bats-core.git
+          sudo ./bats-core/install.sh /usr/local
 
       - name: Run ShellCheck
+        shell: bash
         run: |
-          shopt -s globstar
           shellcheck -x plugin.tmux scripts/**/*.sh
+
+      - name: Run Unit tests
+        shell: bash
+        run: |
+          bats --print-output-on-failure tests/unit/
