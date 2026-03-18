@@ -14,6 +14,10 @@ readonly BW_CONFIG_DEFAULT_SPLIT_SIZE="20"
 readonly BW_CONFIG_DEFAULT_POPUP_WIDTH="80%"
 readonly BW_CONFIG_DEFAULT_POPUP_HEIGHT="80%"
 
+# Key binding configuration
+readonly BW_CONFIG_KEY_KEY="key"
+readonly BW_CONFIG_DEFAULT_KEY="b"
+
 # Cache configuration
 readonly BW_CONFIG_KEY_CACHE="cache"
 readonly BW_CONFIG_KEY_CACHE_TTL="cache-ttl"
