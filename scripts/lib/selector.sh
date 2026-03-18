@@ -64,7 +64,6 @@ tmux_bw_selector() {
         --delimiter=$'\t' \
         --expect="$BW_KEY_PASTE_PASSWORD,$BW_KEY_COPY_PASSWORD,$BW_KEY_PASTE_USERNAME,$BW_KEY_COPY_USERNAME,$BW_KEY_REFRESH_CACHE" \
         --with-nth=2 \
-        --nth=2 \
         --header-lines=1 \
         --header=$'enter: paste password | ctrl-y: copy password\nctrl-u: paste user | alt-u: copy user | ctrl-r: refresh' \
         --prompt='Bitwarden > ' \
