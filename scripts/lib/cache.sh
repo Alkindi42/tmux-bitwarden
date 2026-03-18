@@ -39,14 +39,17 @@ tmux_bw_list_items_with_cache() {
   local enabled_cache
 
   cache_filter='
-    map({
-      id,
-      name,
-      login: {
-        username: .login.username,
-        uris: .login.uris
-      }
-    })
+    map(
+      select(.type == 1 and .login != null)
+      | {
+          id,
+          name,
+          login: {
+            username: .login.username,
+            uris: .login.uris
+          }
+        }
+    )
   '
 
   enabled_cache="$(tmux_bw_get_config_or_default "$BW_CONFIG_KEY_CACHE" "$BW_CONFIG_DEFAULT_CACHE")"
