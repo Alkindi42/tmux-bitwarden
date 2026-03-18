@@ -20,6 +20,7 @@ source "$CURRENT_DIR/lib/selector.sh"
 
 main() {
   local action
+  local status
   local item_id
   local selection
   local target_pane_id="$1"
@@ -44,9 +45,30 @@ main() {
     ;;
   esac
 
-  selection="$(tmux_bw_selector)" || return 0
+  if selection="$(tmux_bw_selector)"; then
+    status=0
+  else
+    status=$?
+  fi
+
+  case "$status" in
+  0) ;;
+  "$TMUX_BW_SELECTOR_CANCEL")
+    return 0
+    ;;
+  *)
+    tmux_display_message "Selector failed."
+    return 1
+    ;;
+  esac
+
   action="$(printf '%s\n' "$selection" | sed -n '1p')"
   item_id="$(printf '%s\n' "$selection" | sed -n '2p')"
+
+  [[ -n "$action" && -n "$item_id" ]] || {
+    tmux_display_message "Selector returned invalid data."
+    return 1
+  }
 
   case "$action" in
   "$BW_PASTE_PASSWORD")

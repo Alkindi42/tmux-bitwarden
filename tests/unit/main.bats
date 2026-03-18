@@ -47,7 +47,7 @@ setup() {
 
   # shellcheck disable=SC2329
   tmux_bw_selector() {
-    return 1
+    return "$TMUX_BW_SELECTOR_CANCEL"
   }
 
   main "%1"
@@ -63,7 +63,7 @@ setup() {
 
   # shellcheck disable=SC2329
   tmux_bw_selector() {
-    return 1
+    return "$TMUX_BW_SELECTOR_CANCEL"
   }
 
   main "%1"
@@ -169,4 +169,22 @@ setup() {
 
   [ "$COPY_USERNAME_ARGS" = "item-321" ]
   [ "$LAST_MESSAGE" = "Username copied to the clipboard." ]
+}
+
+@test "main shows error when selector fails" {
+  # shellcheck disable=SC2329
+  tmux_bw_get_status() {
+    printf '%s\n' "$BW_STATUS_UNLOCKED"
+  }
+
+  # shellcheck disable=SC2329
+  tmux_bw_selector() {
+    return "$TMUX_BW_SELECTOR_ERROR"
+  }
+
+  local status=0
+  main "%1" || status=$?
+
+  [ "$status" -eq 1 ]
+  [ "$LAST_MESSAGE" = "Selector failed." ]
 }

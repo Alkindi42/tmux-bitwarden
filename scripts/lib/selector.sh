@@ -6,6 +6,9 @@ readonly BW_KEY_PASTE_PASSWORD="enter"
 readonly BW_KEY_PASTE_USERNAME="ctrl-u"
 readonly BW_KEY_REFRESH_CACHE="ctrl-r"
 
+readonly TMUX_BW_SELECTOR_CANCEL=10
+readonly TMUX_BW_SELECTOR_ERROR=20
+
 tmux_bw_selector_rows() {
   local session="$1"
 
@@ -46,6 +49,7 @@ tmux_bw_selector_action_from_key() {
 
 tmux_bw_selector() {
   local key
+  local status
   local session
   local item_id
   local selection
@@ -75,22 +79,35 @@ tmux_bw_selector() {
           printf "%s\n" {4} | jq -r '"'"'if length == 0 then "(none)" else .[] end'"'"'
         ' \
         --preview-window='right:50%:wrap'
-    )" || return 1
+    )"
+
+    status=$?
+
+    case "$status" in
+    0) ;;
+    130 | 1)
+      return "$TMUX_BW_SELECTOR_CANCEL"
+      ;;
+    2)
+      return "$TMUX_BW_SELECTOR_ERROR"
+      ;;
+    *)
+      return "$TMUX_BW_SELECTOR_ERROR"
+      ;;
+    esac
 
     key="$(printf '%s\n' "$selection" | sed -n '1p')"
     selected_line="$(printf '%s\n' "$selection" | sed -n '2p')"
 
-    case "$key" in
-    "$BW_KEY_REFRESH_CACHE")
-      tmux_bw_cache_invalidate || return 1
+    if [[ "$key" == "$BW_KEY_REFRESH_CACHE" ]]; then
+      tmux_bw_cache_invalidate || return "$TMUX_BW_SELECTOR_ERROR"
       continue
-      ;;
-    esac
+    fi
 
-    action_name="$(tmux_bw_selector_action_from_key "$key")" || return 1
+    action_name="$(tmux_bw_selector_action_from_key "$key")" || return "$TMUX_BW_SELECTOR_ERROR"
 
     IFS=$'\t' read -r item_id _name _username _uris_json <<<"$selected_line"
-    [[ -n "$item_id" ]] || return 1
+    [[ -n "$item_id" ]] || return "$TMUX_BW_SELECTOR_ERROR"
 
     printf '%s\n%s\n' "$action_name" "$item_id"
     return 0
