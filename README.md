@@ -14,7 +14,7 @@ Quickly search login items and paste credentials without leaving your terminal.
 - 🔐 Secure vault access through the Bitwarden CLI
 - ⚡ Fast search with optional caching
 - ⌨️ Keyboard-driven workflow
-- 📋 Paste or copy credentials instantly
+- 📋 Paste or copy credentials (username, password, TOTP)
 - 🔄 Refresh cache without leaving the selector
 - 🖥 Popup or split pane interface
 
@@ -65,6 +65,8 @@ Available inside the **selector**:
 | `Ctrl-u` | Paste username into the active pane |
 | `Alt-u` | Copy username to clipboard |
 | `Ctrl-r` | Refresh cached items |
+| `Alt-t` | Copy TOTP to clipboard |
+| `Ctrl-t` | Paste TOTP into the active pane |
 
 ## Authentication
 
