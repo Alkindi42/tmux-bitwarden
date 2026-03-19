@@ -30,20 +30,9 @@ main() {
     return 0
   }
 
-  case "$(tmux_bw_get_status)" in
-  "$BW_STATUS_UNAUTHENTICATED")
-    tmux_display_message "You are not logged in. Please run 'bw login'."
-    return 0
-    ;;
-  "$BW_STATUS_LOCKED")
-    tmux_bw_unlock_and_store_session || return 0
-    ;;
-  "$BW_STATUS_UNLOCKED") ;;
-  *)
-    tmux_display_message "Unknown Bitwarden status."
-    return 1
-    ;;
-  esac
+  if ! tmux_bw_has_session; then
+    tmux_bw_authenticate || return 0
+  fi
 
   if selection="$(tmux_bw_selector)"; then
     status=0

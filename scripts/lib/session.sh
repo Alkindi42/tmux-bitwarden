@@ -5,6 +5,60 @@ readonly BW_STATUS_LOCKED="locked"
 readonly BW_STATUS_UNLOCKED="unlocked"
 readonly BW_STATUS_UNAUTHENTICATED="unauthenticated"
 
+tmux_bw_run_with_auth() {
+  local fn="$1"
+  local result
+  local session
+  local ret
+
+  session="$(tmux_bw_get_session)" || return 1
+  [[ -n "$session" ]] || return 1
+
+  shift
+
+  result="$("$fn" "$session" "$@" 2>&1)"
+  ret=$?
+
+  if ((ret != 0)) && {
+    [[ "$result" == *"Vault is locked."* ]] ||
+      [[ "$result" == *"You are not logged in."* ]]
+  }; then
+    tmux_bw_authenticate || return 1
+
+    session="$(tmux_bw_get_session)" || return 1
+    [[ -n "$session" ]] || return 1
+
+    result="$("$fn" "$session" "$@")"
+    ret=$?
+  fi
+
+  printf '%s\n' "$result"
+  return "$ret"
+}
+
+tmux_bw_authenticate() {
+  case "$(tmux_bw_get_status)" in
+  "$BW_STATUS_UNAUTHENTICATED")
+    tmux_display_message "You are not logged in. Please run 'bw login'."
+    return 1
+    ;;
+  "$BW_STATUS_LOCKED")
+    tmux_bw_unlock_and_store_session || return 1
+    ;;
+  "$BW_STATUS_UNLOCKED") ;;
+  *)
+    tmux_display_message "Unknown Bitwarden status."
+    return 1
+    ;;
+  esac
+}
+
+tmux_bw_has_session() {
+  local session
+  session="$(tmux_bw_get_session)"
+  [[ -n "$session" ]]
+}
+
 # Get vault status via the Bitwarden CLI
 bw_get_status() {
   local session="$1"

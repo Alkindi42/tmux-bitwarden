@@ -30,13 +30,9 @@ tmux_bw_copy_to_clipboard() {
 
 tmux_bw_get_totp() {
   local id="$1"
-  local session
   local value
 
-  session="$(tmux_bw_get_session)" || return 1
-  [[ -n "$session" ]] || return 1
-
-  value="$(bw_get_totp "$session" "$id")" || return 1
+  value="$(tmux_bw_run_with_auth "bw_get_totp" "$id")" || return 1
   [[ -n "$value" ]] || return 1
 
   printf '%s\n' "$value"
@@ -46,12 +42,8 @@ tmux_bw_get_value() {
   local id="$1"
   local field="$2"
   local value
-  local session
 
-  session="$(tmux_bw_get_session)" || return 1
-  [[ -n "$session" ]] || return 1
-
-  value="$(bw_get_item_by_id "$session" "$id" | jq --arg field "$field" -r '.login[$field] // empty')" || return 1
+  value="$(tmux_bw_run_with_auth "bw_get_item_by_id" "$id" | jq --arg field "$field" -r '.login[$field] // empty')" || return 1
   [[ -n "$value" ]] || return 1
 
   printf '%s\n' "$value"

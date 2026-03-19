@@ -12,7 +12,6 @@ setup() {
   COPY_PASSWORD_ARGS=""
   PASTE_USERNAME_ARGS=""
   COPY_USERNAME_ARGS=""
-  UNLOCK_CALLED=0
 
   # shellcheck disable=SC2329
   tmux_display_message() {
@@ -26,10 +25,16 @@ setup() {
   [ "$LAST_MESSAGE" = "Invalid pane target." ]
 }
 
-@test "main returns 0 and shows message when user is unauthenticated" {
+@test "main returns 0 when authentication fails without session" {
   # shellcheck disable=SC2329
-  tmux_bw_get_status() {
-    printf '%s\n' "$BW_STATUS_UNAUTHENTICATED"
+  tmux_bw_has_session() {
+    return 1
+  }
+
+  # shellcheck disable=SC2329
+  tmux_bw_authenticate() {
+    LAST_MESSAGE="You are not logged in. Please run 'bw login'."
+    return 1
   }
 
   main "%1"
@@ -37,14 +42,18 @@ setup() {
   [ "$LAST_MESSAGE" = "You are not logged in. Please run 'bw login'." ]
 }
 
-@test "main unlocks the vault when status is locked" {
+@test "main authenticates when session is missing and continues to selector" {
+  local auth_called=0
+
   # shellcheck disable=SC2329
-  tmux_bw_get_status() {
-    printf '%s\n' "$BW_STATUS_LOCKED"
+  tmux_bw_has_session() {
+    return 1
   }
 
-  tmux_bw_unlock_and_store_session() {
-    UNLOCK_CALLED=1
+  # shellcheck disable=SC2329
+  tmux_bw_authenticate() {
+    auth_called=1
+    return 0
   }
 
   # shellcheck disable=SC2329
@@ -54,13 +63,13 @@ setup() {
 
   main "%1"
 
-  [ "$UNLOCK_CALLED" -eq 1 ]
+  [ "$auth_called" -eq 1 ]
 }
 
 @test "main returns 0 when selector is canceled" {
   # shellcheck disable=SC2329
-  tmux_bw_get_status() {
-    printf '%s\n' "$BW_STATUS_UNLOCKED"
+  tmux_bw_has_session() {
+    return 0
   }
 
   # shellcheck disable=SC2329
@@ -75,8 +84,8 @@ setup() {
 
 @test "main dispatches paste password with selected item id and target pane" {
   # shellcheck disable=SC2329
-  tmux_bw_get_status() {
-    printf '%s\n' "$BW_STATUS_UNLOCKED"
+  tmux_bw_has_session() {
+    return 0
   }
 
   # shellcheck disable=SC2329
@@ -84,6 +93,7 @@ setup() {
     printf '%s\n%s\n' "$BW_PASTE_PASSWORD" "item-123"
   }
 
+  # shellcheck disable=SC2329
   tmux_bw_paste_password() {
     PASTE_PASSWORD_ARGS="$1|$2"
   }
@@ -95,8 +105,8 @@ setup() {
 
 @test "main shows success message after copy password" {
   # shellcheck disable=SC2329
-  tmux_bw_get_status() {
-    printf '%s\n' "$BW_STATUS_UNLOCKED"
+  tmux_bw_has_session() {
+    return 0
   }
 
   # shellcheck disable=SC2329
@@ -104,6 +114,7 @@ setup() {
     printf '%s\n%s\n' "$BW_COPY_PASSWORD" "item-456"
   }
 
+  # shellcheck disable=SC2329
   tmux_bw_copy_password() {
     COPY_PASSWORD_ARGS="$1"
   }
@@ -114,10 +125,10 @@ setup() {
   [ "$LAST_MESSAGE" = "Password copied to the clipboard." ]
 }
 
-@test "main returns 1 and shows message for unknown action" {
+@test "main shows message for unknown action" {
   # shellcheck disable=SC2329
-  tmux_bw_get_status() {
-    printf '%s\n' "$BW_STATUS_UNLOCKED"
+  tmux_bw_has_session() {
+    return 0
   }
 
   # shellcheck disable=SC2329
@@ -125,16 +136,15 @@ setup() {
     printf '%s\n%s\n' "unknown-action" "item-999"
   }
 
-  local status=0
-  main "%1" || status=$?
+  main "%1"
 
   [ "$LAST_MESSAGE" = "Unknown action." ]
 }
 
 @test "main dispatches paste username with selected item id and target pane" {
   # shellcheck disable=SC2329
-  tmux_bw_get_status() {
-    printf '%s\n' "$BW_STATUS_UNLOCKED"
+  tmux_bw_has_session() {
+    return 0
   }
 
   # shellcheck disable=SC2329
@@ -142,6 +152,7 @@ setup() {
     printf '%s\n%s\n' "$BW_PASTE_USERNAME" "item-789"
   }
 
+  # shellcheck disable=SC2329
   tmux_bw_paste_username() {
     PASTE_USERNAME_ARGS="$1|$2"
   }
@@ -153,8 +164,8 @@ setup() {
 
 @test "main shows success message after copy username" {
   # shellcheck disable=SC2329
-  tmux_bw_get_status() {
-    printf '%s\n' "$BW_STATUS_UNLOCKED"
+  tmux_bw_has_session() {
+    return 0
   }
 
   # shellcheck disable=SC2329
@@ -162,6 +173,7 @@ setup() {
     printf '%s\n%s\n' "$BW_COPY_USERNAME" "item-321"
   }
 
+  # shellcheck disable=SC2329
   tmux_bw_copy_username() {
     COPY_USERNAME_ARGS="$1"
   }
@@ -174,8 +186,8 @@ setup() {
 
 @test "main shows error when selector fails" {
   # shellcheck disable=SC2329
-  tmux_bw_get_status() {
-    printf '%s\n' "$BW_STATUS_UNLOCKED"
+  tmux_bw_has_session() {
+    return 0
   }
 
   # shellcheck disable=SC2329
@@ -192,8 +204,8 @@ setup() {
 
 @test "main dispatches paste totp with selected item id and target pane" {
   # shellcheck disable=SC2329
-  tmux_bw_get_status() {
-    printf '%s\n' "$BW_STATUS_UNLOCKED"
+  tmux_bw_has_session() {
+    return 0
   }
 
   # shellcheck disable=SC2329
@@ -213,8 +225,8 @@ setup() {
 
 @test "main shows success message after copy totp" {
   # shellcheck disable=SC2329
-  tmux_bw_get_status() {
-    printf '%s\n' "$BW_STATUS_UNLOCKED"
+  tmux_bw_has_session() {
+    return 0
   }
 
   # shellcheck disable=SC2329

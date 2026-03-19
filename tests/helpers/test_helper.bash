@@ -6,6 +6,12 @@ load_selector_script() {
   source "$PROJECT_ROOT/scripts/lib/selector.sh"
 }
 
+load_session_script() {
+  source "$PROJECT_ROOT/scripts/lib/config.sh"
+  source "$PROJECT_ROOT/scripts/lib/common.sh"
+  source "$PROJECT_ROOT/scripts/lib/session.sh"
+}
+
 load_cache_script() {
   source "$PROJECT_ROOT/scripts/lib/config.sh"
   source "$PROJECT_ROOT/scripts/lib/vault.sh"

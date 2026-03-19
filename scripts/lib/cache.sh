@@ -30,8 +30,12 @@ tmux_bw_cache_is_expired() {
   ((now - mtime >= ttl_seconds))
 }
 
+# Execute bw list items with auth retry and current tmux session.
+tmux_bw_list_items_raw() {
+  tmux_bw_run_with_auth "bw_list_items"
+}
+
 tmux_bw_list_items_with_cache() {
-  local session="$1"
   local cache
   local cache_ttl
   local cache_file
@@ -61,13 +65,13 @@ tmux_bw_list_items_with_cache() {
 
     if tmux_bw_cache_is_expired "$cache_file" "$cache_ttl"; then
       mkdir -p "$(dirname "$cache_file")" || return 1
-      cache="$(bw_list_items "$session" | jq -c "$cache_filter")" || return 1
+      cache="$(tmux_bw_list_items_raw | jq -c "$cache_filter")" || return 1
       printf '%s\n' "$cache" >"$cache_file" || return 1
     else
       cache="$(<"$cache_file")" || return 1
     fi
   else
-    cache="$(bw_list_items "$session" | jq -c "$cache_filter")" || return 1
+    cache="$(tmux_bw_list_items_raw | jq -c "$cache_filter")" || return 1
   fi
 
   printf "%s\n" "$cache"

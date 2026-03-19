@@ -12,10 +12,8 @@ readonly TMUX_BW_SELECTOR_CANCEL=10
 readonly TMUX_BW_SELECTOR_ERROR=20
 
 tmux_bw_selector_rows() {
-  local session="$1"
-
   printf 'id\tName\tUsername\tURIs\tHasTotp\n'
-  tmux_bw_list_items_with_cache "$session" | jq -r '
+  tmux_bw_list_items_with_cache | jq -r '
     .[]
     | [
         .id,
@@ -59,7 +57,6 @@ tmux_bw_selector_action_from_key() {
 tmux_bw_selector() {
   local key
   local status
-  local session
   local item_id
   local selection
   local action_name
@@ -70,13 +67,9 @@ tmux_bw_selector() {
   local _uris_json
   local _has_totp
 
-  if ! session="$(tmux_bw_get_session)"; then
-    return "$TMUX_BW_SELECTOR_ERROR"
-  fi
-
   while true; do
     if selection="$(
-      tmux_bw_selector_rows "$session" | fzf \
+      tmux_bw_selector_rows | fzf \
         --delimiter=$'\t' \
         --expect="$BW_KEY_PASTE_PASSWORD,$BW_KEY_COPY_PASSWORD,$BW_KEY_PASTE_USERNAME,$BW_KEY_COPY_USERNAME,$BW_KEY_REFRESH_CACHE,$BW_KEY_COPY_TOTP,$BW_KEY_PASTE_TOTP" \
         --with-nth=2 \
