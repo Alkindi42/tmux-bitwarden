@@ -52,5 +52,11 @@ tmux_bw_unlock_and_store_session() {
     tmux_display_message "Failed to unlock vault. Please try again."
     return 1
   }
+
+  [[ -n "$new_session" ]] || {
+    tmux_display_message "Failed to unlock vault. Please try again."
+    return 1
+  }
+
   tmux_bw_set_config "session" "$new_session"
 }

@@ -36,7 +36,7 @@ main() {
     return 0
     ;;
   "$BW_STATUS_LOCKED")
-    tmux_bw_unlock_and_store_session || return 1
+    tmux_bw_unlock_and_store_session || return 0
     ;;
   "$BW_STATUS_UNLOCKED") ;;
   *)
