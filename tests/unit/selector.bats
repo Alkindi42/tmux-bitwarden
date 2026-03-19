@@ -108,7 +108,7 @@ setup() {
   run tmux_bw_selector
 
   [ "$status" -eq 0 ]
-  [ "$output" = "$(printf '%s\n%s' "$BW_PASTE_PASSWORD" "item-123")" ]
+  [[ "$output" == *"$(printf '%s\n%s' "$BW_PASTE_PASSWORD" "item-123")" ]]
 }
 
 @test "alt-t maps to copy totp" {

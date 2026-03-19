@@ -23,11 +23,13 @@ tmux_bw_run_with_auth() {
     [[ "$result" == *"Vault is locked."* ]] ||
       [[ "$result" == *"You are not logged in."* ]]
   }; then
+    printf "Unlocking vault...\n" >&2
     tmux_bw_authenticate || return 1
 
     session="$(tmux_bw_get_session)" || return 1
     [[ -n "$session" ]] || return 1
 
+    printf "Fetching vault...\n" >&2
     result="$("$fn" "$session" "$@")"
     ret=$?
   fi

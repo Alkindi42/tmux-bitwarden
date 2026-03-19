@@ -74,7 +74,11 @@ tmux_bw_selector() {
   local _has_totp
 
   while true; do
-    rows="$(tmux_bw_selector_rows)" || return "$TMUX_BW_SELECTOR_ABORTED"
+    printf "Loading Bitwarden items...\n" >&2
+    rows="$(tmux_bw_selector_rows)"
+    status=$?
+
+    ((status == 0)) || return "$TMUX_BW_SELECTOR_ABORTED"
 
     if selection="$(
       printf '%s\n' "$rows" | fzf \

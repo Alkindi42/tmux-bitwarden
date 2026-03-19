@@ -125,7 +125,7 @@ setup() {
   run tmux_bw_run_with_auth fake_bw_call
 
   [ "$status" -eq 0 ]
-  [ "$output" = "ok" ]
+  [[ "$output" = *"ok" ]]
   grep -qx 'auth' "$trace_file"
   [ "$(grep -c '^call:' "$trace_file")" -eq 2 ]
   grep -qx 'call:stale-session' "$trace_file"
