@@ -12,6 +12,7 @@ Quickly search login items and paste credentials without leaving your terminal.
 - 🔍 Fuzzy search Bitwarden items with `fzf`
 - 👀 Preview username and URIs before selecting
 - 🔐 Secure vault access through the Bitwarden CLI
+- 🔁 Automatic re-authentication on session expiration
 - ⚡ Fast search with optional caching
 - ⌨️ Keyboard-driven workflow
 - 📋 Paste or copy credentials (username, password, TOTP)
@@ -77,6 +78,12 @@ bw login
 ```
 
 _No manual `BW_SESSION` export is required._
+
+The plugin automatically:
+
+- reuses your existing Bitwarden session when available
+- prompts for unlock only when necessary
+- retries operations transparently if the session expires
 
 ## Configuration
 
