@@ -35,6 +35,17 @@ setup() {
   [ "$status" -ne 0 ]
 }
 
+@test "selector returns ABORTED when rows loading fails" {
+  # shellcheck disable=SC2329
+  tmux_bw_selector_rows() {
+    return 1
+  }
+
+  run tmux_bw_selector
+
+  [ "$status" -eq "$TMUX_BW_SELECTOR_ABORTED" ]
+}
+
 @test "selector returns CANCEL on fzf interrupt (130)" {
   # shellcheck disable=SC2329
   tmux_bw_selector_rows() {

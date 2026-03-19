@@ -10,10 +10,15 @@ readonly BW_KEY_REFRESH_CACHE="ctrl-r"
 
 readonly TMUX_BW_SELECTOR_CANCEL=10
 readonly TMUX_BW_SELECTOR_ERROR=20
+readonly TMUX_BW_SELECTOR_ABORTED=30
 
 tmux_bw_selector_rows() {
+  local items
+
+  items="$(tmux_bw_list_items_with_cache)" || return 1
+
   printf 'id\tName\tUsername\tURIs\tHasTotp\n'
-  tmux_bw_list_items_with_cache | jq -r '
+  printf '%s\n' "$items" | jq -r '
     .[]
     | [
         .id,
@@ -56,6 +61,7 @@ tmux_bw_selector_action_from_key() {
 
 tmux_bw_selector() {
   local key
+  local rows
   local status
   local item_id
   local selection
@@ -68,8 +74,10 @@ tmux_bw_selector() {
   local _has_totp
 
   while true; do
+    rows="$(tmux_bw_selector_rows)" || return "$TMUX_BW_SELECTOR_ABORTED"
+
     if selection="$(
-      tmux_bw_selector_rows | fzf \
+      printf '%s\n' "$rows" | fzf \
         --delimiter=$'\t' \
         --expect="$BW_KEY_PASTE_PASSWORD,$BW_KEY_COPY_PASSWORD,$BW_KEY_PASTE_USERNAME,$BW_KEY_COPY_USERNAME,$BW_KEY_REFRESH_CACHE,$BW_KEY_COPY_TOTP,$BW_KEY_PASTE_TOTP" \
         --with-nth=2 \

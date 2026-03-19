@@ -195,10 +195,8 @@ setup() {
     return "$TMUX_BW_SELECTOR_ERROR"
   }
 
-  local status=0
-  main "%1" || status=$?
+  main "%1"
 
-  [ "$status" -eq 1 ]
   [ "$LAST_MESSAGE" = "Selector failed." ]
 }
 

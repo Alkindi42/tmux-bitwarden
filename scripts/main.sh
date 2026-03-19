@@ -45,9 +45,12 @@ main() {
   "$TMUX_BW_SELECTOR_CANCEL")
     return 0
     ;;
+  "$TMUX_BW_SELECTOR_ABORTED")
+    return 0
+    ;;
   *)
     tmux_display_message "Selector failed."
-    return 1
+    return 0
     ;;
   esac
 

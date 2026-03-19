@@ -19,10 +19,10 @@ tmux_bw_open_ui() {
 
   case "$ui_mode" in
   popup)
-    tmux_bw_open_popup "$target_pane_id" || return 1
+    tmux_bw_open_popup "$target_pane_id" || return 0
     ;;
   split)
-    tmux_bw_open_split "$target_pane_id" || return 1
+    tmux_bw_open_split "$target_pane_id" || return 0
     ;;
   *)
     tmux_display_message "Unknown UI mode: $ui_mode"
