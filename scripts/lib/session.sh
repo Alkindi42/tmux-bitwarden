@@ -4,6 +4,7 @@
 readonly BW_STATUS_LOCKED="locked"
 readonly BW_STATUS_UNLOCKED="unlocked"
 readonly BW_STATUS_UNAUTHENTICATED="unauthenticated"
+readonly BW_ERROR_UNLOCK_FAILED="Failed to unlock vault. Please try again."
 
 tmux_bw_run_with_auth() {
   local fn="$1"
@@ -105,12 +106,12 @@ tmux_bw_unlock_and_store_session() {
   local new_session
 
   new_session="$(bw_unlock)" || {
-    tmux_display_message "Failed to unlock vault. Please try again."
+    tmux_display_message "$BW_ERROR_UNLOCK_FAILED"
     return 1
   }
 
   [[ -n "$new_session" ]] || {
-    tmux_display_message "Failed to unlock vault. Please try again."
+    tmux_display_message "$BW_ERROR_UNLOCK_FAILED"
     return 1
   }
 
