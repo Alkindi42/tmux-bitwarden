@@ -7,6 +7,8 @@ Search and access your Bitwarden vault directly inside tmux using fuzzy search.
 
 Quickly search login items and paste credentials without leaving your terminal.
 
+https://github.com/user-attachments/assets/ec9be323-7113-4016-8f17-59665666361c
+
 ## Features
 
 - 🔍 Fuzzy search Bitwarden items with `fzf`
